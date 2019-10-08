@@ -87,7 +87,7 @@ class Game extends Component {
           ...player,
           correctAnswer: player.id === maxScorePlayerId
         })),
-        roundScore: null,
+        roundResult: null,
         selectedPlayer: null
       }
     }));
@@ -100,13 +100,17 @@ class Game extends Component {
       this.setState(prevState => ({
         game: {
           ...prevState.game,
-          score: ++prevState.game.score
+          score: ++prevState.game.score,
+          selectedPlayer: chosenPlayer.id,
+          roundResult: "WIN"
         }
       }));
     } else {
       this.setState(prevState => ({
         game: {
-          ...prevState.game
+          ...prevState.game,
+          selectedPlayer: chosenPlayer.id,
+          roundResult: "LOSE"
         }
       }));
     }
@@ -157,7 +161,12 @@ class Game extends Component {
           {/* {isDialogOpen && this.renderDialog()} */}
           {game.playersInPlay.map(player => (
             <Grid item xs={6} key={player.id}>
-              <Player player={player} onChoose={this.onChoosePlayer(player)} />
+              <Player
+                player={player}
+                revealResult={game.roundResult}
+                selectedPlayer={game.selectedPlayer}
+                onChoose={this.onChoosePlayer(player)}
+              />
             </Grid>
           ))}
         </Grid>
