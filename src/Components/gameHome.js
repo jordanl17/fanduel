@@ -1,6 +1,11 @@
 import React, { Component, Fragment } from "react";
 import Grid from "@material-ui/core/Grid";
-import { withStyles, Dialog, DialogTitle } from "@material-ui/core";
+import {
+  withStyles,
+  Dialog,
+  DialogTitle,
+  DialogActions
+} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 
 import Player from "./player";
@@ -26,6 +31,7 @@ class Game extends Component {
     isError: false,
     game: {
       score: 0,
+      rounds: 0,
       playerIdsSeen: [],
       playersInPlay: null
     }
@@ -87,6 +93,7 @@ class Game extends Component {
           ...player,
           correctAnswer: player.id === maxScorePlayerId
         })),
+        rounds: ++prevState.game.rounds,
         roundResult: null,
         selectedPlayer: null
       }
@@ -131,10 +138,33 @@ class Game extends Component {
     );
   };
 
-  renderDialog = () => {
+  resetGame = () => {
+    this.setState(
+      {
+        game: {
+          score: 0,
+          rounds: 0,
+          playerIdsSeen: [],
+          playersInPlay: null,
+          selectedPlayer: null,
+          roundResult: null
+        }
+      },
+      this.prepareRound
+    );
+  };
+
+  renderWinningDialog = () => {
     return (
       <Dialog open>
-        <DialogTitle>Hello</DialogTitle>
+        <DialogTitle>
+          You win, it took you {this.state.game.rounds} rounds to win
+        </DialogTitle>
+        <DialogActions>
+          <Button color="primary" onClick={this.resetGame}>
+            Try better
+          </Button>
+        </DialogActions>
       </Dialog>
     );
   };
@@ -149,7 +179,8 @@ class Game extends Component {
     if (isError) {
       return <div>An error occurred, refresh the page</div>;
     }
-    // const isDialogOpen = game.score === 0;
+
+    const isWinningDialogOpen = game.score === 10;
     const showActionButton = game.roundResult;
 
     return (
@@ -158,7 +189,7 @@ class Game extends Component {
           <div className={classes.scoreCall}>Score: {game.score}</div>
         </div>
         <Grid container spacing={3}>
-          {/* {isDialogOpen && this.renderDialog()} */}
+          {isWinningDialogOpen && this.renderWinningDialog()}
           {game.playersInPlay.map(player => (
             <Grid item xs={6} key={player.id}>
               <Player
