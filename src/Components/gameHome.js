@@ -25,23 +25,33 @@ const styles = {
 };
 
 class Game extends Component {
+  defaultGameState = {
+    score: 0,
+    rounds: 0,
+    playerIndexesSeen: {},
+    playersInPlay: null,
+    selectedPlayer: null,
+    roundResult: null
+  };
+
   state = {
     players: [],
     isLoading: true,
     isError: false,
-    game: {
-      score: 0,
-      rounds: 0,
-      playerIdsSeen: [],
-      playersInPlay: null
-    }
+    game: this.defaultGameState
   };
 
   componentDidMount() {
     getPlayers()
-      .then(players => {
+      .then(teams => {
         this.setState(
-          { players, isLoading: false, isError: false },
+          {
+            teams,
+            // take the first 2 teams
+            teamsInPlay: Object.keys(teams).slice(0, 2),
+            isLoading: false,
+            isError: false
+          },
           this.prepareRound
         );
       })
@@ -56,28 +66,34 @@ class Game extends Component {
       : randomNumber;
   };
 
-  prepareRound = () => {
-    const numberOfPlayersNotPlayed = this.state.players.filter(
-      ({ id }) => !this.state.game.playerIdsSeen.includes(id)
+  generateRandomPlayerFromTeam = teamId => {
+    const { playerIndexesSeen, teams } = this.state;
+    const thisTeam = teams[teamId];
+
+    const indexesSeenFromTeam =
+      (playerIndexesSeen && playerIndexesSeen[teamId]) || [];
+
+    const numberOfPlayersNotPlayedFromTeam = thisTeam.players.filter(
+      ({ id }) => !indexesSeenFromTeam.includes(id)
     ).length;
 
-    const randomIndexA = this.randomIndex(
-      numberOfPlayersNotPlayed,
-      this.state.game.playerIdsSeen
+    const randomIndex = this.randomIndex(
+      numberOfPlayersNotPlayedFromTeam,
+      indexesSeenFromTeam
     );
-    const randomIndexB = this.randomIndex(numberOfPlayersNotPlayed, [
-      ...this.state.game.playerIdsSeen,
-      randomIndexA
-    ]);
 
-    const playerA = {
-      ...this.state.players[randomIndexA],
-      index: randomIndexA
+    const randomUnplayedPlayer = {
+      ...thisTeam.players[randomIndex],
+      index: randomIndex
     };
-    const playerB = {
-      ...this.state.players[randomIndexB],
-      index: randomIndexB
-    };
+
+    return randomUnplayedPlayer;
+  };
+
+  prepareRound = () => {
+    const { teamsInPlay } = this.state;
+    const playerA = this.generateRandomPlayerFromTeam(teamsInPlay[0]);
+    const playerB = this.generateRandomPlayerFromTeam(teamsInPlay[1]);
 
     const newPlayers = [playerA, playerB];
 
@@ -86,14 +102,14 @@ class Game extends Component {
       .sort((a, b) => b.score - a.score)
       .map(({ id }) => id);
 
-    this.setState(prevState => ({
+    this.setState(({ game }) => ({
       game: {
-        ...prevState.game,
-        playersInPlay: [playerA, playerB].map(player => ({
+        ...game,
+        playersInPlay: newPlayers.map(player => ({
           ...player,
           correctAnswer: player.id === maxScorePlayerId
         })),
-        rounds: ++prevState.game.rounds,
+        rounds: ++game.rounds,
         roundResult: null,
         selectedPlayer: null
       }
@@ -104,18 +120,18 @@ class Game extends Component {
     const allScores = this.state.game.playersInPlay.map(({ score }) => score);
 
     if (chosenPlayer.score === Math.max(...allScores)) {
-      this.setState(prevState => ({
+      this.setState(({ game }) => ({
         game: {
-          ...prevState.game,
-          score: ++prevState.game.score,
+          ...game,
+          score: ++game.score,
           selectedPlayer: chosenPlayer.id,
           roundResult: "WIN"
         }
       }));
     } else {
-      this.setState(prevState => ({
+      this.setState(({ game }) => ({
         game: {
-          ...prevState.game,
+          ...game,
           selectedPlayer: chosenPlayer.id,
           roundResult: "LOSE"
         }
@@ -124,14 +140,26 @@ class Game extends Component {
   };
 
   proceedGame = () => {
-    this.setState(
-      prevState => ({
-        game: {
-          ...prevState.game,
-          playerIdsSeen: [
-            ...prevState.game.playerIdsSeen,
-            ...prevState.game.playersInPlay.map(({ index }) => index)
+    const playerIndexesSeen = this.state.game.playersInPlay.reduce(
+      (existingIndexesSeen, player) => {
+        return {
+          ...existingIndexesSeen,
+          [player.teamId]: [
+            ...(existingIndexesSeen[player.teamId] || []),
+            player.index
           ]
+        };
+      },
+      this.state.game.playerIndexesSeen
+    );
+
+    console.log("indexes seen", playerIndexesSeen);
+
+    this.setState(
+      ({ game }) => ({
+        game: {
+          ...game,
+          playerIndexesSeen
         }
       }),
       this.prepareRound
@@ -141,14 +169,7 @@ class Game extends Component {
   resetGame = () => {
     this.setState(
       {
-        game: {
-          score: 0,
-          rounds: 0,
-          playerIdsSeen: [],
-          playersInPlay: null,
-          selectedPlayer: null,
-          roundResult: null
-        }
+        game: this.defaultGameState
       },
       this.prepareRound
     );
@@ -168,6 +189,7 @@ class Game extends Component {
       </Dialog>
     );
   };
+
   render() {
     const { isLoading, isError, game } = this.state;
     const { classes } = this.props;
@@ -180,7 +202,7 @@ class Game extends Component {
       return <div>An error occurred, refresh the page</div>;
     }
 
-    const isWinningDialogOpen = game.score === 10;
+    const isWinningDialogOpen = game.score === 2;
     const showActionButton = game.roundResult;
 
     return (
@@ -208,7 +230,7 @@ class Game extends Component {
             color="primary"
             onClick={this.proceedGame}
           >
-            Next
+            Next Round
           </Button>
         )}
       </Fragment>
