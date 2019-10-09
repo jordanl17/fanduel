@@ -10,7 +10,8 @@ export const getPlayers = () => {
         return response.json();
       }
       // error, then reject after .json()
-      return response.json().then(message => Promise.reject(message));
+      const { statusText = "An error occurred" } = response;
+      return Promise.reject(statusText);
     })
     .then(body => transformPlayers(body));
 };

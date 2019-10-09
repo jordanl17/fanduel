@@ -5,7 +5,7 @@ const transformPlayer = player => ({
   teamId: player.team._members[0]
 });
 
-const removeNoScoredPlayers = ({ fppg }) => fppg;
+const removeNoScoredPlayers = ({ fppg }) => fppg || fppg === 0;
 
 export const transformPlayers = rawBody => {
   const teamNames = rawBody.teams.reduce(
@@ -28,8 +28,6 @@ export const transformPlayers = rawBody => {
         }
       };
     }, teamNames);
-
-  console.log(playersByTeam);
 
   return playersByTeam;
 };

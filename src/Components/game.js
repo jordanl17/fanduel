@@ -53,7 +53,7 @@ class Game extends Component {
           {
             teams,
             // take the first 2 teams to play each other
-            teamsInPlay: [Object.keys(teams).slice(0, 2)],
+            teamsInPlay: Object.keys(teams).slice(0, 2),
             isLoading: false,
             isError: false
           },
