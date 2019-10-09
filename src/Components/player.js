@@ -36,15 +36,8 @@ const Player = ({
       onClick={onChoose}
     >
       <CardContent>
-        <Typography>
-          {player.name}
-          {revealResult && (
-            <div>
-              {player.score}
-              {player.correctAnswer ? "correct" : "wrong"}
-            </div>
-          )}
-        </Typography>
+        <Typography>{player.name}</Typography>
+        {revealResult && <Typography>{player.score}</Typography>}
       </CardContent>
     </Card>
   );

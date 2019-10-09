@@ -11,6 +11,8 @@ import Button from "@material-ui/core/Button";
 import Player from "./player";
 import { getPlayers } from "../helpers/requests";
 
+import { WINNING_SCORE, WIN, LOSE } from "../constants";
+
 const styles = {
   scoreParent: {
     textAlign: "center"
@@ -47,7 +49,7 @@ class Game extends Component {
         this.setState(
           {
             teams,
-            // take the first 2 teams
+            // take the first 2 teams to play each other
             teamsInPlay: Object.keys(teams).slice(0, 2),
             isLoading: false,
             isError: false
@@ -67,11 +69,11 @@ class Game extends Component {
   };
 
   generateRandomPlayerFromTeam = teamId => {
-    const { playerIndexesSeen, teams } = this.state;
+    const { game, teams } = this.state;
     const thisTeam = teams[teamId];
 
-    const indexesSeenFromTeam =
-      (playerIndexesSeen && playerIndexesSeen[teamId]) || [];
+    let indexesSeenFromTeam =
+      (game.playerIndexesSeen && game.playerIndexesSeen[teamId]) || [];
 
     const numberOfPlayersNotPlayedFromTeam = thisTeam.players.filter(
       ({ id }) => !indexesSeenFromTeam.includes(id)
@@ -125,7 +127,7 @@ class Game extends Component {
           ...game,
           score: ++game.score,
           selectedPlayer: chosenPlayer.id,
-          roundResult: "WIN"
+          roundResult: WIN
         }
       }));
     } else {
@@ -133,33 +135,44 @@ class Game extends Component {
         game: {
           ...game,
           selectedPlayer: chosenPlayer.id,
-          roundResult: "LOSE"
+          roundResult: LOSE
         }
       }));
     }
   };
 
   proceedGame = () => {
-    const playerIndexesSeen = this.state.game.playersInPlay.reduce(
-      (existingIndexesSeen, player) => {
-        return {
-          ...existingIndexesSeen,
-          [player.teamId]: [
-            ...(existingIndexesSeen[player.teamId] || []),
-            player.index
-          ]
-        };
-      },
-      this.state.game.playerIndexesSeen
+    const {
+      game: { playerIndexesSeen, playersInPlay }
+    } = this.state;
+
+    const playerIndexesSeenPostRound = playersInPlay.reduce(
+      (existingIndexesSeen, player) => ({
+        ...existingIndexesSeen,
+        [player.teamId]: [
+          ...(existingIndexesSeen[player.teamId] || []),
+          player.index
+        ]
+      }),
+      playerIndexesSeen
     );
 
-    console.log("indexes seen", playerIndexesSeen);
+    const noMorePlayers = Object.entries(playerIndexesSeenPostRound).some(
+      ([teamId, indexesSeen]) =>
+        indexesSeen.length === this.state.teams[teamId].players.length
+    );
+    console.log("can you NOT play on", noMorePlayers);
+    if (noMorePlayers) {
+      return this.setState(prevState => ({
+        game: { ...prevState.game, lose: true }
+      }));
+    }
 
     this.setState(
       ({ game }) => ({
         game: {
           ...game,
-          playerIndexesSeen
+          playerIndexesSeen: playerIndexesSeenPostRound
         }
       }),
       this.prepareRound
@@ -175,15 +188,21 @@ class Game extends Component {
     );
   };
 
-  renderWinningDialog = () => {
+  renderLostDialog = () => this.renderDialog("You lost", "Try Again");
+
+  renderWinningDialog = () =>
+    this.renderDialog(
+      `You win, it took you ${this.state.game.rounds} rounds to win`,
+      "Try Better"
+    );
+
+  renderDialog = (body, action) => {
     return (
       <Dialog open>
-        <DialogTitle>
-          You win, it took you {this.state.game.rounds} rounds to win
-        </DialogTitle>
+        <DialogTitle>{body}</DialogTitle>
         <DialogActions>
           <Button color="primary" onClick={this.resetGame}>
-            Try better
+            {action}
           </Button>
         </DialogActions>
       </Dialog>
@@ -202,7 +221,8 @@ class Game extends Component {
       return <div>An error occurred, refresh the page</div>;
     }
 
-    const isWinningDialogOpen = game.score === 2;
+    const isWinningDialogOpen = game.score === WINNING_SCORE;
+    const isLostDialogOpen = game.lose;
     const showActionButton = game.roundResult;
 
     return (
@@ -212,6 +232,7 @@ class Game extends Component {
         </div>
         <Grid container spacing={3}>
           {isWinningDialogOpen && this.renderWinningDialog()}
+          {isLostDialogOpen && this.renderLostDialog()}
           {game.playersInPlay.map(player => (
             <Grid item xs={6} key={player.id}>
               <Player
