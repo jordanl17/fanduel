@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+
 import Grid from "@material-ui/core/Grid";
 import {
   withStyles,
@@ -9,7 +10,7 @@ import {
 import Button from "@material-ui/core/Button";
 
 import Player from "./player";
-import { getPlayers } from "../helpers/requests";
+import { getPlayers } from "../Helpers/requests";
 
 import { WINNING_SCORE, WIN, LOSE } from "../constants";
 
@@ -57,7 +58,7 @@ class Game extends Component {
           this.prepareRound
         );
       })
-      .catch(err => this.setState({ isError: true, isLoading: false }));
+      .catch(err => this.setState({ isError: err.message, isLoading: false }));
   }
 
   randomIndex = (max, numbersToExclude = []) => {
@@ -218,7 +219,7 @@ class Game extends Component {
     }
 
     if (isError) {
-      return <div>An error occurred, refresh the page</div>;
+      return <div>An error occurred, refresh the page - {isError}</div>;
     }
 
     const isWinningDialogOpen = game.score === WINNING_SCORE;
