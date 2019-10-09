@@ -24,5 +24,5 @@
 
 ### Testing strategy
 
-Tests of helpers written with jest
+Tests of helpers written with jest  
 Tests of React components written with jest and @testing-library/react. This ensures that although testing of underlying logic is not covered, testing of the views displayed to users is thoroughly tested. The approach to testing `Game` component was through pseudo integration tests, following game flow and scenarios whilst asserting that user would see certain UI elements
