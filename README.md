@@ -1,8 +1,8 @@
 ### Scripts
 
-`npm i` - install dependencies
-`npm start` - start a dev server with the app running
-`npm t` - run tests
+`npm i` - install dependencies  
+`npm start` - start a dev server with the app running  
+`npm t` - run tests  
 `npm run test:coverage` - run tests with coverage
 
 ### Game logic
