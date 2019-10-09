@@ -6,8 +6,8 @@ import Button from "@material-ui/core/Button";
 
 import Player from "./player";
 import { Dialog } from "./dialog";
-import { getPlayers } from "../Helpers/requests";
-import { generateRandomIndex } from "../Helpers/randomiser";
+import { getPlayers } from "../Testing/requests";
+import { generateRandomIndex } from "../Testing/randomiser";
 
 import { WINNING_SCORE, WIN, LOSE } from "../constants";
 
@@ -35,7 +35,7 @@ class Game extends Component {
   };
 
   state = {
-    players: [],
+    teams: [],
     isLoading: true,
     isError: false,
     game: this.defaultGameState
