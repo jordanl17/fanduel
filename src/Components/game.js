@@ -91,17 +91,7 @@ class Game extends Component {
     const playerA = this.generateRandomPlayerFromTeam(teamsInPlay[0]);
     const playerB = this.generateRandomPlayerFromTeam(teamsInPlay[1]);
 
-    const newPlayers = [playerA, playerB];
-
-    // create new newPlayers arr as sorting will mutate newPlayers
-    const [maxScorePlayerId] = [...newPlayers]
-      .sort((a, b) => b.score - a.score) // sort in descending order
-      .map(({ id }) => id);
-
-    const playersInPlay = newPlayers.map(player => ({
-      ...player,
-      correctAnswer: player.id === maxScorePlayerId
-    }));
+    const playersInPlay = [playerA, playerB];
 
     this.setState(({ game }) => ({
       game: {
