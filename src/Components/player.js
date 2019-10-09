@@ -39,7 +39,9 @@ const Player = ({
     >
       <CardContent>
         <Typography>{player.name}</Typography>
-        {revealResult && <Typography>{player.score}</Typography>}
+        {revealResult && (
+          <Typography>Player Score: {player.score.toFixed(2)}</Typography>
+        )}
       </CardContent>
     </Card>
   );

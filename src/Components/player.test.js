@@ -10,7 +10,7 @@ jest.mock("../constants", () => ({
 }));
 
 const defaultProps = {
-  player: { id: 1, name: "bill bob", score: 10.99 },
+  player: { id: 1, name: "bill bob", score: 10.1111 },
   onChoose: jest.fn(),
   classes: {}
 };
@@ -26,7 +26,7 @@ describe("Player", () => {
      * should not display player score
      * query used to handle no result found
      */
-    expect(queryByText("10.99")).toBeNull();
+    expect(queryByText(/10.11/)).toBeNull();
   });
 
   it("should correctly display the players deails once the round is player", () => {
@@ -36,7 +36,7 @@ describe("Player", () => {
     });
 
     expect(getByText("bill bob")).toBeDefined();
-    expect(getByText("10.99")).toBeDefined();
+    expect(getByText(/10.11/)).toBeDefined();
   });
 
   it("should render green border when the player was a correct selection", () => {
