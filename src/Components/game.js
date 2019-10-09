@@ -5,12 +5,14 @@ import {
   withStyles,
   Dialog,
   DialogTitle,
-  DialogActions
+  DialogActions,
+  Typography
 } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 
 import Player from "./player";
 import { getPlayers } from "../Helpers/requests";
+import { generateRandomIndex } from "../Helpers/randomiser";
 
 import { WINNING_SCORE, WIN, LOSE } from "../constants";
 
@@ -31,7 +33,7 @@ class Game extends Component {
   defaultGameState = {
     score: 0,
     rounds: 0,
-    playerIndexesSeen: {},
+    playerIndexesUsed: {},
     playersInPlay: null,
     selectedPlayer: null,
     roundResult: null
@@ -51,7 +53,7 @@ class Game extends Component {
           {
             teams,
             // take the first 2 teams to play each other
-            teamsInPlay: Object.keys(teams).slice(0, 2),
+            teamsInPlay: [Object.keys(teams).slice(0, 2)],
             isLoading: false,
             isError: false
           },
@@ -61,32 +63,22 @@ class Game extends Component {
       .catch(err => this.setState({ isError: err.message, isLoading: false }));
   }
 
-  randomIndex = (max, numbersToExclude = []) => {
-    var randomNumber = Math.floor(Math.random() * Math.floor(max));
-
-    return numbersToExclude.includes(randomNumber)
-      ? this.randomIndex(max, numbersToExclude)
-      : randomNumber;
-  };
-
   generateRandomPlayerFromTeam = teamId => {
     const { game, teams } = this.state;
-    const thisTeam = teams[teamId];
+    const { players } = teams[teamId];
 
-    let indexesSeenFromTeam =
-      (game.playerIndexesSeen && game.playerIndexesSeen[teamId]) || [];
+    // if teamId not in used players, that means first round so set to []
+    let indexesUsedFromTeam =
+      (game.playerIndexesUsed && game.playerIndexesUsed[teamId]) || [];
 
-    const numberOfPlayersNotPlayedFromTeam = thisTeam.players.filter(
-      ({ id }) => !indexesSeenFromTeam.includes(id)
-    ).length;
-
-    const randomIndex = this.randomIndex(
-      numberOfPlayersNotPlayedFromTeam,
-      indexesSeenFromTeam
+    const randomIndex = generateRandomIndex(
+      players.length,
+      indexesUsedFromTeam
     );
 
+    // add index to allow for removing post round
     const randomUnplayedPlayer = {
-      ...thisTeam.players[randomIndex],
+      ...players[randomIndex],
       index: randomIndex
     };
 
@@ -95,6 +87,7 @@ class Game extends Component {
 
   prepareRound = () => {
     const { teamsInPlay } = this.state;
+
     const playerA = this.generateRandomPlayerFromTeam(teamsInPlay[0]);
     const playerB = this.generateRandomPlayerFromTeam(teamsInPlay[1]);
 
@@ -102,16 +95,18 @@ class Game extends Component {
 
     // create new newPlayers arr as sorting will mutate newPlayers
     const [maxScorePlayerId] = [...newPlayers]
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => b.score - a.score) // sort in descending order
       .map(({ id }) => id);
+
+    const playersInPlay = newPlayers.map(player => ({
+      ...player,
+      correctAnswer: player.id === maxScorePlayerId
+    }));
 
     this.setState(({ game }) => ({
       game: {
         ...game,
-        playersInPlay: newPlayers.map(player => ({
-          ...player,
-          correctAnswer: player.id === maxScorePlayerId
-        })),
+        playersInPlay,
         rounds: ++game.rounds,
         roundResult: null,
         selectedPlayer: null
@@ -121,8 +116,9 @@ class Game extends Component {
 
   onChoosePlayer = chosenPlayer => () => {
     const allScores = this.state.game.playersInPlay.map(({ score }) => score);
+    const correctPlay = chosenPlayer.score === Math.max(...allScores);
 
-    if (chosenPlayer.score === Math.max(...allScores)) {
+    if (correctPlay) {
       this.setState(({ game }) => ({
         game: {
           ...game,
@@ -144,26 +140,31 @@ class Game extends Component {
 
   proceedGame = () => {
     const {
-      game: { playerIndexesSeen, playersInPlay }
+      game: { playerIndexesUsed: playersUsedPreRound, playersInPlay }
     } = this.state;
 
-    const playerIndexesSeenPostRound = playersInPlay.reduce(
-      (existingIndexesSeen, player) => ({
-        ...existingIndexesSeen,
-        [player.teamId]: [
-          ...(existingIndexesSeen[player.teamId] || []),
-          player.index
-        ]
-      }),
-      playerIndexesSeen
+    const updateUsedPlayersForRound = (existingIndexesUsed, player) => ({
+      ...existingIndexesUsed,
+      [player.teamId]: [
+        // if this is first round, set to []
+        ...(existingIndexesUsed[player.teamId] || []),
+        player.index // add this rounds player to usedPlayers
+      ]
+    });
+
+    const playerIndexesUsedPostRound = playersInPlay.reduce(
+      updateUsedPlayersForRound,
+      playersUsedPreRound
     );
 
-    const noMorePlayers = Object.entries(playerIndexesSeenPostRound).some(
-      ([teamId, indexesSeen]) =>
-        indexesSeen.length === this.state.teams[teamId].players.length
+    // no more players if some teams have used all their available players
+    const noMorePlayers = Object.entries(playerIndexesUsedPostRound).some(
+      ([teamId, indexesUsed]) =>
+        indexesUsed.length === this.state.teams[teamId].players.length
     );
-    console.log("can you NOT play on", noMorePlayers);
+
     if (noMorePlayers) {
+      // game is lost - no more rounds can be generated
       return this.setState(prevState => ({
         game: { ...prevState.game, lose: true }
       }));
@@ -173,7 +174,7 @@ class Game extends Component {
       ({ game }) => ({
         game: {
           ...game,
-          playerIndexesSeen: playerIndexesSeenPostRound
+          playerIndexesUsed: playerIndexesUsedPostRound
         }
       }),
       this.prepareRound
@@ -229,7 +230,9 @@ class Game extends Component {
     return (
       <Fragment>
         <div className={classes.scoreParent}>
-          <div className={classes.scoreCall}>Score: {game.score}</div>
+          <Typography className={classes.scoreCall}>
+            Score: {game.score}
+          </Typography>
         </div>
         <Grid container spacing={3}>
           {isWinningDialogOpen && this.renderWinningDialog()}
@@ -246,14 +249,18 @@ class Game extends Component {
           ))}
         </Grid>
         {showActionButton && (
-          <Button
-            className={classes.actionButton}
-            variant="contained"
-            color="primary"
-            onClick={this.proceedGame}
-          >
-            Next Round
-          </Button>
+          <div className={classes.actionButton}>
+            <Typography>
+              {game.roundResult === WIN ? "Correct" : "Wrong"}
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.proceedGame}
+            >
+              Next Round
+            </Button>
+          </div>
         )}
       </Fragment>
     );

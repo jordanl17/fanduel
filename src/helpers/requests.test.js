@@ -1,6 +1,6 @@
 describe("getPlayers", () => {
   it("should make get request to correct URL", () => {
-    expect(true).toBeTruthy();
+    
   });
 
   describe("when request is successful", () => {

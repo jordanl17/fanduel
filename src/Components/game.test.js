@@ -1,5 +1,5 @@
 describe("Game", () => {
-  test("playing a game round should show proceed button on play", () => {});
+  test("playing a game round should show proceed button after play", () => {});
 
   test("playing a correct round should increment score", () => {});
 

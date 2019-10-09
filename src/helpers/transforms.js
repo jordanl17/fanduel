@@ -29,5 +29,7 @@ export const transformPlayers = rawBody => {
       };
     }, teamNames);
 
+  console.log(playersByTeam);
+
   return playersByTeam;
 };

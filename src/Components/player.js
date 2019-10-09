@@ -2,7 +2,7 @@ import React from "react";
 import classnames from "classnames";
 
 import Card from "@material-ui/core/Card";
-import { CardContent, Typography, WithStyles } from "@material-ui/core";
+import { CardContent, Typography, withStyles } from "@material-ui/core";
 
 const styles = {
   card: {
