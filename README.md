@@ -1,68 +1,28 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Scripts
 
-## Available Scripts
+`npm i` - install dependencies
+`npm start` - start a dev server with the app running
+`npm t` - run tests
+`npm run test:coverage` - run tests with coverage
 
-In the project directory, you can run:
+### Game logic
 
-### `npm start`
+- Users will play 2 teams of players against one another
+- Users will only play with each player once in a single game
+- Once all players in a single team have been played, and the winning score is yet to be achieved, the game is lost
+- Once the score reached 10, the game is won
+- On resetting the game, score is reset and all players may be played in a round again
+- On making a player selection the user will be given feedback as to whether the choice was correct or wrong, and may then proceed to the next round of the game
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Future work
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+- Handle 2 players with equal FPPG score
+- Allow for user to select the teams to be played
+- Allow for the user to play more than 2 teams against one another
+- Allow for the user to view more information on each player
+- Allow for the user to filter the players to be chosen from based on position played, or injury status
 
-### `npm test`
+### Testing strategy
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Tests of helpers written with jest
+Tests of React components written with jest and @testing-library/react. This ensures that although testing of underlying logic is not covered, testing of the views displayed to users is thoroughly tested. The approach to testing `Game` component was through pseudo integration tests, following game flow and scenarios whilst asserting that user would see certain UI elements
