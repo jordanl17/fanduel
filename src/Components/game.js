@@ -1,16 +1,11 @@
 import React, { Component, Fragment } from "react";
 
 import Grid from "@material-ui/core/Grid";
-import {
-  withStyles,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  Typography
-} from "@material-ui/core";
+import { withStyles, Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 
 import Player from "./player";
+import { Dialog } from "./dialog";
 import { getPlayers } from "../Helpers/requests";
 import { generateRandomIndex } from "../Helpers/randomiser";
 
@@ -180,27 +175,17 @@ class Game extends Component {
     );
   };
 
-  renderLostDialog = () => this.renderDialog("You lost", "Try Again");
+  renderLostDialog = () => (
+    <Dialog body={"You lost"} action={"Try Again"} onClick={this.resetGame} />
+  );
 
-  renderWinningDialog = () =>
-    this.renderDialog(
-      `You win, it took you ${this.state.game.rounds} rounds to win`,
-      "Try Better"
-    );
-
-  // TODO: move to a dialog component
-  renderDialog = (body, action) => {
-    return (
-      <Dialog open>
-        <DialogTitle>{body}</DialogTitle>
-        <DialogActions>
-          <Button color="primary" onClick={this.resetGame}>
-            {action}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  };
+  renderWinningDialog = () => (
+    <Dialog
+      body={`You win, it took you ${this.state.game.rounds} rounds to win`}
+      action={"Try Better"}
+      onClick={this.resetGame}
+    />
+  );
 
   render() {
     const { isLoading, isError, game } = this.state;
