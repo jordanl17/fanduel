@@ -1,0 +1,36 @@
+{
+  "1": {
+    "name": "team one",
+    "players": [
+      {
+        "name": "bill bob",
+        "score": 1,
+        "id": 1,
+        "teamId": 1
+      },
+      {
+        "name": "santa clause",
+        "score": 100,
+        "id": 2,
+        "teamId": 1
+      }
+    ]
+  },
+  "2": {
+    "name": "team two",
+    "players": [
+      {
+        "name": "tim tom",
+        "score": 10,
+        "id": 3,
+        "teamId": 2
+      }
+    ]
+  },
+  "3": {
+    "name": "team three",
+    "players": [
+      { "name": "player shouldn't show", "score": 1, "id": 10, "teamId": 3 }
+    ]
+  }
+}

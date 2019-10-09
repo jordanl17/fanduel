@@ -3,6 +3,12 @@ import { render } from "@testing-library/react";
 
 import Player from "./player";
 
+// strongly define constants incase these change in the future
+jest.mock("../constants", () => ({
+  WIN: "WIN",
+  LOSE: "LOSE"
+}));
+
 const defaultProps = {
   player: { id: 1, name: "bill bob", score: 10.99 },
   onChoose: jest.fn(),

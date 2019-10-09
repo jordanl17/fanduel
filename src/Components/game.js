@@ -76,7 +76,7 @@ class Game extends Component {
       indexesUsedFromTeam
     );
 
-    // add index to allow for removing post round
+    // add index to allow for ignoring these players in future rounds
     const randomUnplayedPlayer = {
       ...players[randomIndex],
       index: randomIndex
@@ -188,6 +188,7 @@ class Game extends Component {
       "Try Better"
     );
 
+  // TODO: move to a dialog component
   renderDialog = (body, action) => {
     return (
       <Dialog open>
@@ -205,12 +206,12 @@ class Game extends Component {
     const { isLoading, isError, game } = this.state;
     const { classes } = this.props;
 
-    if (isLoading || !game.playersInPlay) {
-      return <div>Loading...</div>;
-    }
-
     if (isError) {
       return <div>An error occurred, refresh the page - {isError}</div>;
+    }
+
+    if (isLoading || !game.playersInPlay) {
+      return <div>Loading...</div>;
     }
 
     const isWinningDialogOpen = game.score === WINNING_SCORE;
@@ -228,7 +229,7 @@ class Game extends Component {
           {isWinningDialogOpen && this.renderWinningDialog()}
           {isLostDialogOpen && this.renderLostDialog()}
           {game.playersInPlay.map(player => (
-            <Grid item xs={6} key={player.id}>
+            <Grid item xs={6} key={`${player.id}-${player.teamId}`}>
               <Player
                 player={player}
                 revealResult={game.roundResult}

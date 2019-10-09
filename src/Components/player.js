@@ -4,15 +4,17 @@ import classnames from "classnames";
 import Card from "@material-ui/core/Card";
 import { CardContent, Typography, withStyles } from "@material-ui/core";
 
+import { WIN, LOSE } from "../constants";
+
 const styles = {
   card: {
     margin: 10,
     border: "1px solid white"
   },
-  LOSE: {
+  [LOSE]: {
     border: "1px solid red"
   },
-  WIN: {
+  [WIN]: {
     border: "1px solid green"
   }
 };
