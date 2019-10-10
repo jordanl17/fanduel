@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import PropTypes from "prop-types";
 
 import Grid from "@material-ui/core/Grid";
 import { withStyles, Typography } from "@material-ui/core";
@@ -21,6 +22,10 @@ const styles = {
   actionButton: {
     float: "right",
     margin: 10
+  },
+  teamName: {
+    marginLeft: 15,
+    marginTop: 20
   }
 };
 
@@ -100,7 +105,11 @@ class Game extends Component {
   };
 
   onChoosePlayer = chosenPlayer => () => {
-    const allScores = this.state.game.playersInPlay.map(({ score }) => score);
+    const {
+      game: { playersInPlay }
+    } = this.state;
+
+    const allScores = playersInPlay.map(({ score }) => score);
     const correctPlay = chosenPlayer.score === Math.max(...allScores);
 
     if (correctPlay) {
@@ -188,7 +197,7 @@ class Game extends Component {
   );
 
   render() {
-    const { isLoading, isError, game } = this.state;
+    const { isLoading, isError, game, teams } = this.state;
     const { classes } = this.props;
 
     if (isError) {
@@ -215,6 +224,9 @@ class Game extends Component {
           {isLostDialogOpen && this.renderLostDialog()}
           {game.playersInPlay.map(player => (
             <Grid item xs={6} key={`${player.id}-${player.teamId}`}>
+              <Typography className={classes.teamName}>
+                Team: {teams[player.teamId].name}
+              </Typography>
               <Player
                 player={player}
                 revealResult={game.roundResult}
@@ -242,5 +254,14 @@ class Game extends Component {
     );
   }
 }
+
+Game.propTypes = {
+  classes: PropTypes.shape({
+    teamName: PropTypes.string.isRequired,
+    actionButton: PropTypes.string.isRequired,
+    scoreParent: PropTypes.string.isRequired,
+    scoreCall: PropTypes.string.isRequired
+  })
+};
 
 export default withStyles(styles)(Game);

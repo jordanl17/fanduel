@@ -1,5 +1,6 @@
 import React from "react";
 import classnames from "classnames";
+import PropTypes from "prop-types";
 
 import Card from "@material-ui/core/Card";
 import { CardContent, Typography, withStyles } from "@material-ui/core";
@@ -26,7 +27,6 @@ const Player = ({
   onChoose,
   classes
 }) => {
-  // highlight player if player is selected
   const shouldHighlightPlayer = selectedPlayer === player.id;
 
   return (
@@ -45,6 +45,27 @@ const Player = ({
       </CardContent>
     </Card>
   );
+};
+
+Player.defaultProps = {
+  selectedPlayer: null,
+  revealResult: null
+};
+
+Player.propTypes = {
+  selectedPlayer: PropTypes.string,
+  player: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    score: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired
+  }),
+  revealResult: PropTypes.string,
+  onChoose: PropTypes.func.isRequired,
+  classes: PropTypes.shape({
+    card: PropTypes.string.isRequired,
+    [LOSE]: PropTypes.string.isRequired,
+    [WIN]: PropTypes.string.isRequired
+  })
 };
 
 export default withStyles(styles)(Player);

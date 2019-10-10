@@ -1,4 +1,6 @@
 import React from "react";
+import PropTypes from "prop-types";
+
 import {
   Dialog as MUIDialog,
   DialogTitle,
@@ -16,3 +18,9 @@ export const Dialog = ({ body, action, onClick }) => (
     </DialogActions>
   </MUIDialog>
 );
+
+Dialog.propTypes = {
+  body: PropTypes.string.isRequired,
+  action: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired
+};

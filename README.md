@@ -15,12 +15,11 @@
 - On making a player selection the user will be given feedback as to whether the choice was correct or wrong, and may then proceed to the next round of the game
 
 ### Future work
-
-- Handle 2 players with equal FPPG score
-- Allow for user to select the teams to be played
-- Allow for the user to play more than 2 teams against one another
-- Allow for the user to view more information on each player
-- Allow for the user to filter the players to be chosen from based on position played, or injury status
+Allow user to  
+- select the teams to be played
+- play more than 2 teams against one another
+- view more information on each player
+- filter the players to be chosen from based on position played, or injury status
 
 ### Testing strategy
 

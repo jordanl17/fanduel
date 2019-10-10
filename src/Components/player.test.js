@@ -10,7 +10,7 @@ jest.mock("../constants", () => ({
 }));
 
 const defaultProps = {
-  player: { id: 1, name: "bill bob", score: 10.1111 },
+  player: { id: "1", name: "bill bob", score: 10.1111 },
   onChoose: jest.fn(),
   classes: {}
 };
@@ -31,7 +31,7 @@ describe("Player", () => {
 
   it("should correctly display the players deails once the round is player", () => {
     const { getByText } = renderPlayer({
-      selectedPlayer: 2,
+      selectedPlayer: "2",
       revealResult: "WIN"
     });
 
@@ -41,7 +41,7 @@ describe("Player", () => {
 
   it("should render green border when the player was a correct selection", () => {
     const { getByText } = renderPlayer({
-      selectedPlayer: 1,
+      selectedPlayer: "1",
       revealResult: "WIN"
     });
 
@@ -52,7 +52,7 @@ describe("Player", () => {
 
   it("should render red border when the player was an incorrect selection", () => {
     const { getByText } = renderPlayer({
-      selectedPlayer: 1,
+      selectedPlayer: "1",
       revealResult: "LOSE"
     });
 
@@ -63,7 +63,7 @@ describe("Player", () => {
 
   it("should render no border when the player was not selected but the round has been played", () => {
     const { getByText } = renderPlayer({
-      selectedPlayer: 2, // selected player is not this player
+      selectedPlayer: "2", // selected player is not this player
       revealResult: "WIN"
     });
 
