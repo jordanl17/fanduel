@@ -2,7 +2,8 @@ const transformPlayer = player => ({
   name: `${player.first_name} ${player.last_name}`,
   score: player.fppg,
   id: player.id,
-  teamId: player.team._members[0]
+  teamId: player.team._members[0],
+  image: player.images.default.url
 });
 
 const removeNoScoredPlayers = ({ fppg }) => fppg || fppg === 0;

@@ -10,21 +10,24 @@ describe("transformPlayers", () => {
           last_name: "tom",
           fppg: 1,
           id: 3,
-          team: { _members: [2] }
+          team: { _members: [2] },
+          images: { default: { url: "test image 1" } }
         },
         {
           first_name: "bill",
           last_name: "bob",
           fppg: 1,
           id: 1,
-          team: { _members: [1] }
+          team: { _members: [1] },
+          images: { default: { url: "test image 2" } }
         },
         {
           first_name: "santa",
           last_name: "clause",
           fppg: 1,
           id: 2,
-          team: { _members: [1] }
+          team: { _members: [1] },
+          images: { default: { url: "test image 3" } }
         }
       ]
     };
@@ -36,13 +39,15 @@ describe("transformPlayers", () => {
             name: "bill bob",
             score: 1,
             id: 1,
-            teamId: 1
+            teamId: 1,
+            image: "test image 2"
           },
           {
             name: "santa clause",
             score: 1,
             id: 2,
-            teamId: 1
+            teamId: 1,
+            image: "test image 3"
           }
         ]
       },
@@ -53,7 +58,8 @@ describe("transformPlayers", () => {
             name: "tim tom",
             score: 1,
             id: 3,
-            teamId: 2
+            teamId: 2,
+            image: "test image 1"
           }
         ]
       }
@@ -79,14 +85,16 @@ describe("transformPlayers", () => {
           last_name: "tom",
           fppg: 100,
           id: 3,
-          team: { _members: [2] }
+          team: { _members: [2] },
+          images: { default: { url: "test image" } }
         },
         {
           // player has no fppg - not returned
           first_name: "bill",
           last_name: "bob",
           id: 1,
-          team: { _members: [1] }
+          team: { _members: [1] },
+          images: { default: { url: "test image" } }
         },
         {
           // player has 0 fppg - should be returned
@@ -95,7 +103,8 @@ describe("transformPlayers", () => {
           fppg: 0,
           id: 2,
           // taking only first team, player should appear in team 1
-          team: { _members: [1, 2] }
+          team: { _members: [1, 2] },
+          images: { default: { url: "test image" } }
         }
       ]
     };
@@ -107,7 +116,8 @@ describe("transformPlayers", () => {
             name: "santa clause",
             score: 0,
             id: 2,
-            teamId: 1
+            teamId: 1,
+            image: "test image"
           }
         ]
       },
@@ -118,7 +128,8 @@ describe("transformPlayers", () => {
             name: "tim tom",
             score: 100,
             id: 3,
-            teamId: 2
+            teamId: 2,
+            image: "test image"
           }
         ]
       },
@@ -143,7 +154,8 @@ describe("transformPlayers", () => {
           someOtherField: "test",
           fppg: 1,
           id: 1,
-          team: { _members: [1] }
+          team: { _members: [1] },
+          images: { default: { url: "test image" } }
         }
       ]
     };
@@ -155,7 +167,8 @@ describe("transformPlayers", () => {
             name: "bill bob",
             score: 1,
             id: 1,
-            teamId: 1
+            teamId: 1,
+            image: "test image"
           }
         ]
       }

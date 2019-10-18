@@ -3,14 +3,19 @@ import classnames from "classnames";
 import PropTypes from "prop-types";
 
 import Card from "@material-ui/core/Card";
-import { CardContent, Typography, withStyles } from "@material-ui/core";
+import {
+  CardContent,
+  Typography,
+  withStyles,
+  CardMedia
+} from "@material-ui/core";
 
 import { WIN, LOSE } from "../constants";
 
-const styles = {
+const styles = ({ palette }) => ({
   card: {
     margin: 10,
-    border: "1px solid white"
+    border: `1px solid ${palette.common.white}`
   },
   [LOSE]: {
     border: "1px solid red"
@@ -18,7 +23,7 @@ const styles = {
   [WIN]: {
     border: "1px solid green"
   }
-};
+});
 
 const Player = ({
   selectedPlayer,
@@ -39,6 +44,7 @@ const Player = ({
     >
       <CardContent>
         <Typography>{player.name}</Typography>
+        <CardMedia src={player.image} component="img" />
         {revealResult && (
           <Typography>Player Score: {player.score.toFixed(2)}</Typography>
         )}
